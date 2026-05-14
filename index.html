@@ -385,18 +385,38 @@
     </div>
   </div>
   <div class="contact-right">
-    <div class="form-title">Envie uma mensagem</div>
+    <div class="form-title">Agende pelo WhatsApp</div>
+    <p style="font-size:13px;color:var(--muted);font-weight:300;line-height:1.7;margin-bottom:1.5rem;">Preencha os campos abaixo e clique em <strong style="color:var(--text)">Enviar pelo WhatsApp</strong>. Sua mensagem será enviada diretamente para o consultório com todas as informações.</p>
     <div class="frow">
-      <div class="fld"><label>Nome</label><input type="text" placeholder="Nome do responsável"/></div>
-      <div class="fld"><label>Telefone</label><input type="tel" placeholder="(13) 9 9999-9999"/></div>
+      <div class="fld"><label>Nome do responsável</label><input type="text" id="wa-nome" placeholder="Seu nome completo"/></div>
+      <div class="fld"><label>Telefone</label><input type="tel" id="wa-tel" placeholder="(13) 9 9999-9999"/></div>
     </div>
-    <div class="fld"><label>E-mail</label><input type="email" placeholder="seu@email.com"/></div>
+    <div class="fld"><label>Nome da criança / adolescente</label><input type="text" id="wa-paciente" placeholder="Nome do paciente"/></div>
     <div class="frow">
-      <div class="fld"><label>Convênio</label><select><option>Unimed</option><option>SulAmérica</option><option>Petrobras</option><option>Cassi</option><option>Particular</option></select></div>
-      <div class="fld"><label>Assunto</label><select><option>Agendamento</option><option>Dúvida</option><option>Outro</option></select></div>
+      <div class="fld"><label>Convênio</label>
+        <select id="wa-convenio">
+          <option>Unimed</option>
+          <option>SulAmérica</option>
+          <option>Petrobras</option>
+          <option>Cassi</option>
+          <option>Particular</option>
+        </select>
+      </div>
+      <div class="fld"><label>Motivo</label>
+        <select id="wa-motivo">
+          <option>Consulta de rotina</option>
+          <option>Urgência</option>
+          <option>Calendário vacinal</option>
+          <option>Primeira consulta</option>
+          <option>Outro</option>
+        </select>
+      </div>
     </div>
-    <div class="fld"><label>Mensagem</label><textarea placeholder="Como podemos ajudar?"></textarea></div>
-    <button class="fsub" onclick="handleSubmit(this)">Enviar mensagem</button>
+    <div class="fld"><label>Observação (opcional)</label><textarea id="wa-obs" placeholder="Alguma informação adicional?"></textarea></div>
+    <button class="fsub" onclick="enviarWhatsApp()" style="background:#25D366;display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;">
+      <i class="ti ti-brand-whatsapp" style="font-size:16px"></i> Enviar pelo WhatsApp
+    </button>
+    <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:10px;font-weight:300;">Você será redirecionado para o WhatsApp do consultório</p>
   </div>
 </section>
 
@@ -427,13 +447,30 @@
   function closeMenu() {
     document.getElementById('mobileMenu').classList.remove('open');
   }
-  function handleSubmit(btn) {
-    btn.textContent = '✓ Mensagem enviada!';
-    btn.style.background = 'var(--green-dark)';
-    setTimeout(() => {
-      btn.textContent = 'Enviar mensagem';
-      btn.style.background = '';
-    }, 3000);
+  function enviarWhatsApp() {
+    const nome     = document.getElementById('wa-nome').value.trim();
+    const tel      = document.getElementById('wa-tel').value.trim();
+    const paciente = document.getElementById('wa-paciente').value.trim();
+    const convenio = document.getElementById('wa-convenio').value;
+    const motivo   = document.getElementById('wa-motivo').value;
+    const obs      = document.getElementById('wa-obs').value.trim();
+
+    if (!nome || !tel || !paciente) {
+      alert('Por favor, preencha Nome, Telefone e Nome do paciente.');
+      return;
+    }
+
+    const msg = `Olá! Gostaria de agendar uma consulta.\n\n` +
+      `👤 *Responsável:* ${nome}\n` +
+      `📞 *Telefone:* ${tel}\n` +
+      `🧒 *Paciente:* ${paciente}\n` +
+      `🏥 *Convênio:* ${convenio}\n` +
+      `📋 *Motivo:* ${motivo}\n` +
+      (obs ? `📝 *Observação:* ${obs}\n` : '') +
+      `\nAguardo confirmação. Obrigado!`;
+
+    const url = `https://wa.me/5513974269863?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
   }
   // Fechar menu ao clicar fora
   document.addEventListener('click', function(e) {
